@@ -60,7 +60,7 @@
   </a>
 </div>
 
-_Heimdall checkes the client's IP to check whether the request has originated from inside IIT Kharagpur network. This helps to ascertain if the client is a current member of the institute and should have access to certain information._
+_Heimdall checks the client's IP to know whether the request has originated from inside the IIT Kharagpur network. This helps to ascertain if the client is a current member of the institute and should have access to certain information._
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -120,13 +120,13 @@ _Now that the environment has been set up and configured to properly compile and
 
 <!-- UPDATE -->
 
-IIT Kharagpur has it's own internal campus network which is the primary source of internet for it's students, staff and faculty.
+IIT Kharagpur has its internal campus network which is the primary source of Internet for its students, staff and faculty.
 
-For connection to the outside network (normal internet services), it uses a [NAT Gateway](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html) which handles all requests going outside. While doing so, the client IP address in those requests are changed from the internal IP to any one of the pool of public IP addresses assigned to IIT Kharagpur.
+For connection to the outside network (normal internet services), it uses a [NAT Gateway](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html) which handles all requests going outside. While doing so, the client IP address in those requests is changed from the internal IP to any one of the pool of public IP addresses assigned to IIT Kharagpur.
 
-So, to check whether a request has originated from inside IIT Kharagpur network, we just check whether the client's IP address belongs to one of those public IPs.
+So, to check whether a request has originated from inside the IIT Kharagpur network, we just check whether the client's IP address belongs to one of those public IPs.
 
-While just doing this would have sufficed, we donot know whether these Public IPs are permanent or are they subject to change over time. We therefore do a Whois lookup of the IP address and check it's response to decide whether this IP address belongs to IIT Kharagpur. A screenshot of such a Whois lookup is shown below.
+While just doing this would have sufficed, we do not know whether these Public IPs are permanent or are subject to change over time. We therefore do a Whois lookup of the IP address and check its response to decide whether this IP address belongs to IIT Kharagpur. A screenshot of such a Whois lookup is shown below.
 
 <div align="center">
   <a href="https://github.com/metakgp/heimdall">
@@ -138,9 +138,9 @@ While just doing this would have sufficed, we donot know whether these Public IP
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-All this time you might be wondering why do you need a different server to just check this. Can't we do this in any project where such a feature is required?
+All this time you might be wondering why you need a different server to just check this. Can't we do this in any project where such a feature is required?
 
-Well yes. Provided it has a backend server. This cannot be done in the frontend because the Web Browser does not provide the IP information to the Javascript engine. So for the projects which donot need a backend, like [Chillzone](https://github.com/metakgp/chillzone) or [ERP Auto Login](https://github.com/metakgp/iitkgp-erp-auto-login), this simple API call can do the required work.
+Well yes. Provided it has a backend server. This cannot be done in the front-end because the Web Browser does not provide the IP information to the Javascript engine. So for projects that do not need a backend, like [Chillzone](https://github.com/metakgp/chillzone) or [ERP Auto Login](https://github.com/metakgp/iitkgp-erp-auto-login), this simple API call can do the required work.
 
 ## Maintainer(s)
 
