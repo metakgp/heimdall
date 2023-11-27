@@ -5,10 +5,12 @@ cleanup() {
 	rm /etc/nginx/sites-enabled/heimdall.metaploy.conf
 }
 
-trap 'cleanup' SIGQUIT
+trap 'cleanup' SIGQUIT SIGTERM SIGHUP
 
 "${@}" &
 
 cp /heimdall.metaploy.conf /etc/nginx/sites-enabled
 
 wait $!
+
+echo "lmao"
