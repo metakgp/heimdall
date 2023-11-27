@@ -56,7 +56,7 @@
 <!-- UPDATE -->
 <div align="center">
   <a href="https://github.com/metakgp/heimdall">
-    <img width="80%" alt="image" src="./screenshot.png">
+    <img width="80%" alt="image" src="./assets/screenshot.png">
   </a>
 </div>
 
@@ -130,9 +130,9 @@ While just doing this would have sufficed, we do not know whether these Public I
 
 <div align="center">
   <a href="https://github.com/metakgp/heimdall">
-    <img width="80%" alt="image" src="./whois.png">
+    <img width="80%" alt="image" src="./assets/whois.png">
   </a>
-  
+
   _For complete Whois information check [here](https://whois.domaintools.com/203.110.242.30)._
 </div>
 
