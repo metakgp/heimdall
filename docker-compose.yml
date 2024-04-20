@@ -1,6 +1,7 @@
 services:
   heimdall:
     build: "."
+    restart: always
     networks:
       metaploy-network:
         aliases:
