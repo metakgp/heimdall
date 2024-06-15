@@ -344,7 +344,7 @@ func main() {
 	initMailer()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/campus_check", handleCampusCheck)
+	mux.HandleFunc("/campus-check", handleCampusCheck)
 	mux.HandleFunc("/get-otp", handleGetOtp)
 	mux.HandleFunc("/verify-otp", handleVerifyOtp)
 	mux.HandleFunc("/validate-jwt", handleValidateJwt)
