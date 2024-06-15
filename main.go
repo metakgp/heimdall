@@ -93,6 +93,41 @@ func sendMail(emailTo, subject, body string) (bool, error) {
 	return true, nil
 }
 
+func generateOtp(user User) (bool, error) {
+	validPeriod, err := strconv.Atoi(os.Getenv("OTP_VALIDITY_PERIOD"))
+	if err != nil || validPeriod < 30 { // keep 30s as minimum valid period
+		validPeriod = 600
+	}
+
+	secret, err := totp.Generate(totp.GenerateOpts{
+		Issuer:      "Heimdall",
+		AccountName: user.Email,
+		Period:      uint(validPeriod),
+	})
+	if err != nil {
+		fmt.Println(err)
+		return false, errors.New("error generating OTP")
+	}
+
+	otp, err := totp.GenerateCode(secret.Secret(), time.Now())
+	if err != nil {
+		fmt.Println(err)
+		return false, errors.New("error generating OTP")
+	}
+
+	otp_status, err := sendMail(user.Email, "OTP for Sign In into Heimdall Portal of MetaKGP, IIT Kharagpur is "+otp, "OTP for Sign In into Heimdall Portal of MetaKGP, IIT Kharagpur is "+otp)
+	if err != nil || !otp_status {
+		fmt.Println(err)
+		return false, errors.New("error generating OTP")
+	}
+
+	currentTime := int(time.Now().Unix())
+	user.Secret = secret.Secret()
+	user.LastUsed = int64(currentTime)
+	usersMap[user.Email] = &user
+	return otp_status, nil
+}
+
 func handleCampusCheck(res http.ResponseWriter, req *http.Request) {
 	clientIP := req.Header.Get("X-Forwarded-For")
 	whoisResponse, err := whois.Whois(clientIP)
@@ -141,61 +176,61 @@ func handleGetOtp(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	user, ok := usersMap[email]
-	if ok {
-		// user already tried
-		const cooldown = 120 * time.Second
-		if time.Now().Unix()-user.LastUsed < int64(cooldown.Seconds()) {
-			http.Error(res, "You requested OTP recently. Please wait 2min before requesting again.", http.StatusBadRequest)
-			return
-		}
-	}
-
 	// check for KGPian email
 	if !strings.HasSuffix(email, "@kgpian.iitkgp.ac.in") {
 		http.Error(res, "Invalid email domain. Must be @kgpian.iitkgp.ac.in", http.StatusBadRequest)
 		return
 	}
 
-	validPeriod, err := strconv.Atoi(os.Getenv("OTP_VALIDITY_PERIOD"))
-	if err != nil || validPeriod < 30 { // keep 30s as minimum valid period
-		validPeriod = 600
-	}
+	user, ok := usersMap[email]
+	if ok {
+		cooldown, err := strconv.Atoi(os.Getenv("RESEND_OTP_COOLDOWN"))
+		if err != nil {
+			cooldown = 60 // keep 30s as minimum cooldown
+		}
+		cooldownDuration := time.Duration(cooldown) * time.Second
+		if time.Now().Unix()-user.LastUsed < int64(cooldownDuration.Seconds()) {
+			http.Error(res, fmt.Sprintf("You requested OTP recently. Please wait %d seconds before requesting again.", cooldown), http.StatusBadRequest)
+			return
+		} else {
+			otp_status, err := generateOtp(*user)
+			if err != nil || !otp_status {
+				fmt.Println(err)
+				http.Error(res, err.Error(), http.StatusInternalServerError)
+				return
+			}
 
-	secret, err := totp.Generate(totp.GenerateOpts{
-		Issuer:      "Heimdall",
-		AccountName: email,
-		Period:      uint(validPeriod),
-	})
-	if err != nil {
-		fmt.Println(err)
-		http.Error(res, "Error generating OTP", http.StatusInternalServerError)
-		return
-	}
+			response := OtpResponse{
+				Timestamp: int(user.LastUsed),
+				Email:     email,
+				OtpStatus: otp_status,
+			}
 
-	otp, err := totp.GenerateCode(secret.Secret(), time.Now())
-	if err != nil {
-		fmt.Println(err)
-		http.Error(res, "Error generating OTP", http.StatusInternalServerError)
-		return
+			respJson, err := json.Marshal(response)
+			if err != nil {
+				fmt.Println(err)
+				http.Error(res, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+			// Return JSON response with OTP
+			res.Header().Set("Content-Type", "application/json")
+			res.Write(respJson)
+			return
+		}
 	}
 
 	var newUser User
 	newUser.Email = email
-	currentTime := int(time.Now().Unix())
-	newUser.Secret = secret.Secret()
-	newUser.LastUsed = int64(currentTime)
-	usersMap[email] = &newUser
-
-	otp_status, err := sendMail(email, "OTP for Sign In into Heimdall Portal of MetaKGP, IIT Kharagpur is "+otp, "OTP for Sign In into Heimdall Portal of MetaKGP, IIT Kharagpur is "+otp)
+	otp_status, err := generateOtp(newUser)
 	if err != nil {
 		fmt.Println(err)
-		http.Error(res, "Error generating OTP", http.StatusInternalServerError)
+		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	response := OtpResponse{
-		Timestamp: currentTime,
+		Timestamp: int(newUser.LastUsed),
 		Email:     email,
 		OtpStatus: otp_status,
 	}
@@ -227,7 +262,7 @@ func handleVerifyOtp(res http.ResponseWriter, req *http.Request) {
 
 	user, ok := usersMap[email]
 	if !ok {
-		http.Error(res, "Please Request OTP before verifying", http.StatusBadRequest)
+		http.Error(res, "Please Request OTP first", http.StatusBadRequest)
 		return
 	}
 
@@ -241,6 +276,7 @@ func handleVerifyOtp(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 		http.Error(res, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
 	issue_time := time.Now()
@@ -313,7 +349,7 @@ func handleValidateJwt(res http.ResponseWriter, req *http.Request) {
 
 	claims, ok := token.Claims.(*LoginJwtClaims)
 	if !ok {
-		http.Error(res, "Failed to parse claims", http.StatusBadRequest)
+		http.Error(res, ErrJwtTokenInvalid.Error(), http.StatusBadRequest)
 		return
 	}
 	claimsJSON, err := json.Marshal(claims)
