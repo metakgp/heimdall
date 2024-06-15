@@ -8,6 +8,7 @@ import (
 	"net/smtp"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -156,10 +157,15 @@ func handleGetOtp(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	validPeriod, err := strconv.Atoi(os.Getenv("OTP_VALIDITY_PERIOD"))
+	if err != nil || validPeriod < 30 { // keep 30s as minimum valid period
+		validPeriod = 600
+	}
+
 	secret, err := totp.Generate(totp.GenerateOpts{
 		Issuer:      "Heimdall",
 		AccountName: email,
-		Period:      120,
+		Period:      uint(validPeriod),
 	})
 	if err != nil {
 		fmt.Println(err)
