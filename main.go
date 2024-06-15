@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/smtp"
 	"os"
 	"regexp"
 	"strconv"
@@ -70,29 +69,6 @@ func jwtKeyFunc(*jwt.Token) (interface{}, error) {
 	return []byte(key), err
 }
 
-func sendMail(emailTo, subject, body string) (bool, error) {
-	fromEmail := os.Getenv("SMTP_EMAIL")
-	password := os.Getenv("SMTP_APP_PASSWORD")
-
-	if fromEmail == "" || password == "" {
-		return false, fmt.Errorf("SMTP_EMAIL or SMTP_APP_PASSWORD environment variables not set")
-	}
-
-	message := "To: " + emailTo + "\r\n" +
-		"Subject: " + subject + "\r\n" +
-		"\r\n" +
-		body
-
-	auth := smtp.PlainAuth("", fromEmail, password, "smtp.gmail.com")
-
-	err := smtp.SendMail("smtp.gmail.com:587", auth, fromEmail, []string{emailTo}, []byte(message))
-	if err != nil {
-		return false, err
-	}
-
-	return true, nil
-}
-
 func generateOtp(user User) (bool, error) {
 	validPeriod, err := strconv.Atoi(os.Getenv("OTP_VALIDITY_PERIOD"))
 	if err != nil || validPeriod < 30 { // keep 30s as minimum valid period
@@ -115,7 +91,7 @@ func generateOtp(user User) (bool, error) {
 		return false, errors.New("error generating OTP")
 	}
 
-	otp_status, err := sendMail(user.Email, "OTP for Sign In into Heimdall Portal of MetaKGP, IIT Kharagpur is "+otp, "OTP for Sign In into Heimdall Portal of MetaKGP, IIT Kharagpur is "+otp)
+	otp_status, err := sendOTP(user.Email, otp)
 	if err != nil || !otp_status {
 		fmt.Println(err)
 		return false, errors.New("error generating OTP")
@@ -364,6 +340,9 @@ func handleValidateJwt(res http.ResponseWriter, req *http.Request) {
 }
 func main() {
 	godotenv.Load()
+
+	initMailer()
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/campus_check", handleCampusCheck)
 	mux.HandleFunc("/get-otp", handleGetOtp)

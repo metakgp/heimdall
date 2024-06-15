@@ -5,4 +5,5 @@ node-modules/
 heimdall
 
 credentials.json
+token.json
 .env
