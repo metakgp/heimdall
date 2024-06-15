@@ -3,3 +3,6 @@
 .vscode
 node-modules/
 heimdall
+
+credentials.json
+.env
