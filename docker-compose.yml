@@ -8,6 +8,8 @@ services:
           - heimdall
     volumes:
       - nginx-config-volume:/etc/nginx/sites-enabled
+      - ./credentials.json:/credentials.json
+      - ./token.json:/token.json
 
 networks:
   metaploy-network:
