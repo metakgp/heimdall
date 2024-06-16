@@ -1,0 +1,140 @@
+.form-container {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffe0b5;
+
+    padding: 3rem 4rem;
+    border-radius: 5px;
+
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+    .info {
+        text-align: center;
+        margin-bottom: 2rem;
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+        }
+
+        p {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #444;
+        }
+    }
+
+    .form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        input {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            font-family: $font-family;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #ed9455;
+            color: white;
+            font-family: $font-family;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+    }
+}
+
+.success-container {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #d4edda;
+
+    padding: 3rem 4rem;
+    border-radius: 5px;
+
+    text-align: center;
+
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+    img {
+        width: 100px;
+        margin-bottom: 0.2rem;
+    }
+
+    .email {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        color: #333;
+
+        span {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+    }
+
+    a {
+        padding: 0.5rem 0.8rem;
+        border-radius: 5px;
+        border: 2px solid #059212;
+        color: #059212;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+
+        span {
+            text-decoration: underline;
+        }
+    }
+}
+
+.services-container {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #d4edda;
+
+    padding: 2rem 4rem;
+    border-radius: 5px;
+
+    text-align: center;
+
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+    .title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+    }
+
+    .subtitle {
+        margin-bottom: 2rem;
+        color: #333;
+    }
+
+    .service {
+        display: block;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem 0.8rem;
+        border-radius: 5px;
+        border: 2px solid #059212;
+        color: #059212;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+}
