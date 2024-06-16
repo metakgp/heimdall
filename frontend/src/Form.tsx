@@ -3,22 +3,22 @@ import { validateEmail } from "./utils";
 import toast from "react-hot-toast";
 import { BACKEND_URL } from "./constants";
 import Success from "./Success";
-import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Form = () => {
     const [otpRequested, setOtpRequested] = useState(false);
     const [email, setEmail] = useState("");
     const [otp, setOtp] = useState("");
-    const [jwt, setJwt] = useState("");
-
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        const jwt = localStorage.getItem("jwt");
-        if (jwt) {
-            navigate(`/verify?${searchParams.toString()}`);
-        }
+        fetch(`${BACKEND_URL}/validate-jwt`).then((response) => {
+            if (response.ok) {
+                response.json().then((data) => {
+                    setEmail(data.email);
+                    setIsAuthenticated(true);
+                });
+            }
+        });
     }, []);
 
     const requestOTP = () => {
@@ -64,23 +64,10 @@ const Form = () => {
         })
             .then((response) => {
                 if (response.ok) {
-                    response
-                        .json()
-                        .then((data) => {
-                            localStorage.setItem("jwt", data.jwt);
-                            setJwt(data.jwt);
-                            toast.success("OTP verified successfully", {
-                                id: loadingToast,
-                            });
-                        })
-                        .catch(() => {
-                            toast.error(
-                                "Failed to verify OTP. Please try again",
-                                {
-                                    id: loadingToast,
-                                },
-                            );
-                        });
+                    toast.success("OTP verified successfully", {
+                        id: loadingToast,
+                    });
+                    setIsAuthenticated(true);
                 } else {
                     toast.error("Failed to verify OTP. Please try again", {
                         id: loadingToast,
@@ -94,7 +81,7 @@ const Form = () => {
             });
     };
 
-    if (jwt) {
+    if (isAuthenticated) {
         return <Success email={email} />;
     }
 

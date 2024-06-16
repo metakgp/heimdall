@@ -18,9 +18,14 @@ import (
 	"github.com/rs/cors"
 )
 
-var ErrJwtSecretKeyNotFound = errors.New("ERROR: JWT SECRET KEY NOT FOUND")
-var ErrJwtTokenExpired = errors.New("ERROR: JWT TOKEN EXPIRED")
-var ErrJwtTokenInvalid = errors.New("ERROR: JWT TOKEN INVALID")
+const COOKIE_DOMAIN = ".metakgp.org"
+
+var (
+	ErrJwtSecretKeyNotFound                  = errors.New("ERROR: JWT SECRET KEY NOT FOUND")
+	ErrJwtTokenExpired                       = errors.New("ERROR: JWT TOKEN EXPIRED")
+	ErrJwtTokenInvalid                       = errors.New("ERROR: JWT TOKEN INVALID")
+	usersMap                map[string]*User = make(map[string]*User)
+)
 
 type LoginJwtFields struct {
 	Email string `json:"email"`
@@ -37,16 +42,10 @@ type User struct {
 	LastUsed int64  `json:"last_used"`
 }
 
-var usersMap map[string]*User = make(map[string]*User)
-
 type OtpResponse struct {
 	Email     string `json:"email"`
 	OtpStatus bool   `json:"otp_status"`
 	Timestamp int    `json:"timestamp"`
-}
-
-type VerifiedResponse struct {
-	Jwt string `json:"jwt"`
 }
 
 func getJwtKey() (string, error) {
@@ -271,38 +270,28 @@ func handleVerifyOtp(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	response := VerifiedResponse{Jwt: tokenString}
-	respJson, err := json.Marshal(response)
-	if err != nil {
-		fmt.Println(err)
-		http.Error(res, "Internal Server Error", http.StatusInternalServerError)
-		return
+	cookie := http.Cookie{
+		Name:     "jwt",
+		Value:    tokenString,
+		Expires:  time.Now().Add(time.Hour * 24 * 30),
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
+		Path:     "/",
+		Domain:   COOKIE_DOMAIN,
 	}
 
-	// Return JSON response with OTP
-	res.Header().Set("Content-Type", "application/json")
-	res.Write(respJson)
+	http.SetCookie(res, &cookie)
 }
 
 func handleValidateJwt(res http.ResponseWriter, req *http.Request) {
-	authHeader := req.Header.Get("Authorization")
-	if authHeader == "" {
-		http.Error(res, "Authorization header missing", http.StatusBadRequest)
+	cookie, err := req.Cookie("jwt")
+	if err != nil {
+		http.Error(res, "No JWT session token found.", http.StatusUnauthorized)
 		return
 	}
 
-	parts := strings.Split(authHeader, " ")
-	if len(parts) != 2 || parts[0] != "Bearer" {
-		http.Error(res, "Invalid Authorization header", http.StatusBadRequest)
-		return
-	}
-
-	tokenString := parts[1]
-
-	if tokenString == "" {
-		http.Error(res, "No JWT session token found.", http.StatusBadRequest)
-		return
-	}
+	tokenString := cookie.Value
 
 	var loginClaims = LoginJwtClaims{}
 	token, err := jwt.ParseWithClaims(tokenString, &loginClaims, jwtKeyFunc)
