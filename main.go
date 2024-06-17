@@ -296,7 +296,7 @@ func handleVerifyOtp(res http.ResponseWriter, req *http.Request) {
 }
 
 func handleValidateJwt(res http.ResponseWriter, req *http.Request) {
-	cookie, err := req.Cookie("jwt")
+	cookie, err := req.Cookie("heimdall")
 	if err != nil {
 		http.Error(res, "No JWT session token found.", http.StatusUnauthorized)
 		return
