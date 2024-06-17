@@ -276,7 +276,7 @@ func handleVerifyOtp(res http.ResponseWriter, req *http.Request) {
 		Expires:  time.Now().Add(time.Hour * 24 * 30),
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteNoneMode,
 		Path:     "/",
 		Domain:   COOKIE_DOMAIN,
 	}
