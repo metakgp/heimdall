@@ -61,6 +61,7 @@ const Form = () => {
         fetch(`${BACKEND_URL}/verify-otp`, {
             method: "POST",
             body: formdata,
+            credentials: 'include',
         })
             .then((response) => {
                 if (response.ok) {
