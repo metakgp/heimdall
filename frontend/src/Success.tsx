@@ -6,9 +6,9 @@ const Success = ({ email }: { email: string }) => {
     const givenRedirectUrl = searchParams.get("redirect_url");
     const redirectUrl = validRedirect(givenRedirectUrl);
 
-    setTimeout(() => {
-        window.open(redirectUrl, "_self");
-    }, 3000);
+    // setTimeout(() => {
+    //     window.open(redirectUrl, "_self");
+    // }, 3000);
 
     return (
         <div className="success-container">
