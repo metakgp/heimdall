@@ -332,11 +332,18 @@ func main() {
 
 	initMailer()
 
+	generalCors := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173", "https://heimdall.metakgp.org"},
+		AllowCredentials: true,
+	})
+
+	specialCors := cors.AllowAll()
+
 	mux := http.NewServeMux()
-	mux.HandleFunc("/campus-check", handleCampusCheck)
-	mux.HandleFunc("/get-otp", handleGetOtp)
-	mux.HandleFunc("/verify-otp", handleVerifyOtp)
-	mux.HandleFunc("/validate-jwt", handleValidateJwt)
+	mux.Handle("/campus-check", specialCors.Handler(http.HandlerFunc(handleCampusCheck)))
+	mux.Handle("/get-otp", generalCors.Handler(http.HandlerFunc(handleGetOtp)))
+	mux.Handle("/verify-otp", generalCors.Handler(http.HandlerFunc(handleVerifyOtp)))
+	mux.Handle("/validate-jwt", generalCors.Handler(http.HandlerFunc(handleValidateJwt)))
 
 	handler := cors.AllowAll().Handler(mux)
 
