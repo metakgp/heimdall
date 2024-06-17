@@ -3,7 +3,6 @@ services:
     build: "."
     restart: always
     environment:
-      - TOTP_SECRET_KEY=${TOTP_SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - OTP_VALIDITY_PERIOD=${OTP_VALIDITY_PERIOD}
       - RESEND_OTP_COOLDOWN=${RESEND_OTP_COOLDOWN}
