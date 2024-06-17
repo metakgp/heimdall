@@ -11,7 +11,7 @@ const Form = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        fetch(`${BACKEND_URL}/validate-jwt`).then((response) => {
+        fetch(`${BACKEND_URL}/validate-jwt`, {credentials: 'include'}).then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
                     setEmail(data.email);
