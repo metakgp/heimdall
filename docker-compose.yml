@@ -6,6 +6,8 @@ services:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - OTP_VALIDITY_PERIOD=${OTP_VALIDITY_PERIOD}
       - RESEND_OTP_COOLDOWN=${RESEND_OTP_COOLDOWN}
+      - JWT_EXPIRY_DAYS=${JWT_EXPIRY_DAYS}
+
     networks:
       metaploy-network:
         aliases:
