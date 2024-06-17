@@ -254,11 +254,19 @@ func handleVerifyOtp(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	issue_time := time.Now()
+	expiryDays, err := strconv.Atoi(os.Getenv("JWT_EXPIRY_DAYS"))
+	if err != nil || expiryDays < 1 { // keep 1 day as minimum valid period
+		expiryDays = 90 // Default to 90 days (3 months)
+	}
+
+	issueTime := time.Now()
+	expiryTime := issueTime.AddDate(0, 0, expiryDays)
+
 	claims := &LoginJwtClaims{
 		LoginJwtFields: LoginJwtFields{Email: user.Email},
 		RegisteredClaims: jwt.RegisteredClaims{
-			IssuedAt: jwt.NewNumericDate(issue_time),
+			IssuedAt:  jwt.NewNumericDate(issueTime),
+			ExpiresAt: jwt.NewNumericDate(expiryTime),
 		},
 	}
 
@@ -273,7 +281,7 @@ func handleVerifyOtp(res http.ResponseWriter, req *http.Request) {
 	cookie := http.Cookie{
 		Name:     "jwt",
 		Value:    tokenString,
-		Expires:  time.Now().Add(time.Hour * 24 * 30),
+		Expires:  expiryTime,
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteNoneMode,
