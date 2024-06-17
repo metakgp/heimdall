@@ -282,7 +282,7 @@ func handleVerifyOtp(res http.ResponseWriter, req *http.Request) {
 	}
 
 	cookie := http.Cookie{
-		Name:     "jwt",
+		Name:     "heimdall",
 		Value:    tokenString,
 		Expires:  expiryTime,
 		HttpOnly: true,
