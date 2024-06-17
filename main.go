@@ -71,6 +71,7 @@ func jwtKeyFunc(*jwt.Token) (interface{}, error) {
 func generateOtp(user User) (bool, error) {
 	validPeriod, err := strconv.Atoi(os.Getenv("OTP_VALIDITY_PERIOD"))
 	if err != nil || validPeriod < 30 { // keep 30s as minimum valid period
+		fmt.Println("Invalid OTP_VALIDITY_PERIOD env set. Defaulting to 600 seconds (10 minutes)")
 		validPeriod = 600
 	}
 
@@ -161,6 +162,7 @@ func handleGetOtp(res http.ResponseWriter, req *http.Request) {
 	if ok {
 		cooldown, err := strconv.Atoi(os.Getenv("RESEND_OTP_COOLDOWN"))
 		if err != nil {
+			fmt.Println("Invalid RESEND_OTP_COOLDOWN env set. Defaulting to 60 seconds (1 minute)")
 			cooldown = 60 // keep 30s as minimum cooldown
 		}
 		cooldownDuration := time.Duration(cooldown) * time.Second
@@ -254,11 +256,20 @@ func handleVerifyOtp(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	issue_time := time.Now()
+	expiryDays, err := strconv.Atoi(os.Getenv("JWT_EXPIRY_DAYS"))
+	if err != nil || expiryDays < 1 { // keep 1 day as minimum valid period
+		fmt.Println("Invalid JWT_EXPIRY_DAYS env set. Defaulting to 90 days (3 months)")
+		expiryDays = 90 // Default to 90 days (3 months)
+	}
+
+	issueTime := time.Now()
+	expiryTime := issueTime.AddDate(0, 0, expiryDays)
+
 	claims := &LoginJwtClaims{
 		LoginJwtFields: LoginJwtFields{Email: user.Email},
 		RegisteredClaims: jwt.RegisteredClaims{
-			IssuedAt: jwt.NewNumericDate(issue_time),
+			IssuedAt:  jwt.NewNumericDate(issueTime),
+			ExpiresAt: jwt.NewNumericDate(expiryTime),
 		},
 	}
 
@@ -273,7 +284,7 @@ func handleVerifyOtp(res http.ResponseWriter, req *http.Request) {
 	cookie := http.Cookie{
 		Name:     "jwt",
 		Value:    tokenString,
-		Expires:  time.Now().Add(time.Hour * 24 * 30),
+		Expires:  expiryTime,
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteNoneMode,
