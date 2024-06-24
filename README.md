@@ -124,7 +124,7 @@ _Now that the environment has been set up and configured to properly compile and
    go build
    ```
 5. Install node modules
-  ```sh
+   ```sh
    cd frontend
    npm install
    ```
@@ -146,6 +146,8 @@ _Now that the environment has been set up and configured to properly compile and
    ```
 
 When prompted to enter authorization code, visit the link provided in terminal which will redirect to localhost. Then inspect the url after redirection and copy the string after `code=` and paste it in the terminal. This will create `token.json` file. You need to create this token only once and it will be valid for 6 months.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ### How to use?
 
