@@ -60,7 +60,7 @@
   </a>
 </div>
 
-_Heimdall checks the client's IP to know whether the request has originated from inside the IIT Kharagpur network. This helps to ascertain if the client is a current member of the institute and should have access to certain information._
+_Heimdall checks the client's IP to know whether the request has originated from inside the IIT Kharagpur network and verifies their institute email ID. This helps to ascertain if the client is a current member of the institute and should have access to certain information._
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -115,7 +115,7 @@ _Now that the environment has been set up and configured to properly compile and
    ```
    Choose a strong JWT_SECRET_KEY and edit the .env file accordingly.
 
-3. Install dependencies
+3. Install go dependencies
    ```sh
    go mod download
    ```
@@ -123,13 +123,35 @@ _Now that the environment has been set up and configured to properly compile and
    ```sh
    go build
    ```
-5. Start development server and execute the script
+5. Install node modules
+  ```sh
+   cd frontend
+   npm install
+   ```
+   It is suggested to use pnpm as package manager due to its efficiency. To use pnpm, run following commands instead of above:
+   ```sh
+   npm install -g pnpm
+   cd frontend
+   pnpm install
+   ```
+
+6. Start development server
    ```sh
    npm run dev
+   cd ..
+   ```
+7. Execute the script
+   ```sh
    ./heimdall
    ```
 
-When prompted to enter authorization code, visit the link provided in terminal which will redirect to localhost. Then inspect the url after redirection and copy the string after `code=` and paste it in the terminal. This will create `token.json` file.
+When prompted to enter authorization code, visit the link provided in terminal which will redirect to localhost. Then inspect the url after redirection and copy the string after `code=` and paste it in the terminal. This will create `token.json` file. You need to create this token only once and it will be valid for 6 months.
+
+### How to use?
+
+Enter your institute mail id in the box provided on screen. You will receive an OTP if the provided mail id is a valid institute mail id. In that case, enter the OTP received at the provided email address and verify. These verifies that you are a current member of the institute.
+
+Next, you will have access to services like [Naarad](https://github.com/metakgp/naarad) and [Chillzone](https://github.com/metakgp/chillzone) which are available only for KGPians. These can be accessed via the campus network.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
