@@ -90,7 +90,7 @@ const Form = () => {
         <div className="form-container">
             <div className="info">
                 <div className="title">Heimdall</div>
-                <p>The gatekeeper to Metakgp services</p>
+                <p>The gatekeeper to MetaKGP services</p>
                 <p>Please verify using your kgpian email to continue</p>
             </div>
             <div className="form">

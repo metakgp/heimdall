@@ -89,6 +89,12 @@ The following dependencies are required to be installed for the project to funct
 <!-- UPDATE -->
 
 - [go](https://go.dev/)
+- [nodejs](https://nodejs.org/en/download/package-manager)
+
+To create credentials.json file, create the [OAuth consent screen](https://developers.google.com/workspace/guides/configure-oauth-consent#configure_oauth_consent) and then create [OAuth client ID credentials](https://developers.google.com/workspace/guides/create-credentials#oauth-client-id) by following the steps provided there. While creating OAuth client ID credentials, set redirect URL to any port of the localhost. Then save downloaded json file as credentials.json in the project's root folder.
+
+Then enable [Gmail API](https://console.cloud.google.com/apis/library/gmail.googleapis.com) to enable receiving OTP.
+   
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -102,14 +108,25 @@ _Now that the environment has been set up and configured to properly compile and
    ```sh
    git clone https://github.com/metakgp/heimdall.git
    ```
-2. Install dependencies
-   ```sh
+2. Configure environment variables
+  ```sh
    cd ./heimdall
+   cp .env.template .env
+   ```
+   Choose a strong JWT_SECRET_KEY and edit the .env file accordingly.
+
+3. Install dependencies
+   ```sh
    go mod download
    ```
-3. Execute the script
+4. Compile the code
    ```sh
-   go run main.go
+   go build
+   ```
+5. Start development server and execute the script
+   ```sh
+   npm run dev
+   ./heimdall
    ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
