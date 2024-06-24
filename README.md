@@ -109,7 +109,7 @@ _Now that the environment has been set up and configured to properly compile and
    git clone https://github.com/metakgp/heimdall.git
    ```
 2. Configure environment variables
-  ```sh
+   ```sh
    cd ./heimdall
    cp .env.template .env
    ```
@@ -128,6 +128,8 @@ _Now that the environment has been set up and configured to properly compile and
    npm run dev
    ./heimdall
    ```
+
+When prompted to enter authorization code, visit the link provided in terminal which will redirect to localhost. Then inspect the url after redirection and copy the string after `code=` and paste it in the terminal. This will create `token.json` file.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
