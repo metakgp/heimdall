@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, redirect } from "react-router-dom";
 import { validRedirect } from "./utils";
 
 const Success = ({ email }: { email: string }) => {
@@ -7,7 +7,11 @@ const Success = ({ email }: { email: string }) => {
     const redirectUrl = validRedirect(givenRedirectUrl);
 
     setTimeout(() => {
-        window.open(redirectUrl, "_self");
+        if (redirectUrl == "/services") {
+            redirect(redirectUrl);
+        } else {
+            window.open(redirectUrl, "_self");
+        }
     }, 3000);
 
     return (
