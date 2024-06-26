@@ -1,25 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { validateEmail } from "./utils";
 import toast from "react-hot-toast";
 import { BACKEND_URL } from "./constants";
 import Success from "./Success";
 
-const Form = () => {
-    const [otpRequested, setOtpRequested] = useState(false);
-    const [email, setEmail] = useState("");
-    const [otp, setOtp] = useState("");
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+type FormProps = {
+    isAuthenticated: boolean
+    setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
+    email: string
+    setEmail: React.Dispatch<React.SetStateAction<string>>
+}
 
-    useEffect(() => {
-        fetch(`${BACKEND_URL}/validate-jwt`, {credentials: 'include'}).then((response) => {
-            if (response.ok) {
-                response.json().then((data) => {
-                    setEmail(data.email);
-                    setIsAuthenticated(true);
-                });
-            }
-        });
-    }, []);
+const Form = ({isAuthenticated, setIsAuthenticated, email, setEmail }: FormProps) => {
+    const [otpRequested, setOtpRequested] = useState(false);
+    const [otp, setOtp] = useState("");
+
 
     const requestOTP = () => {
         if (validateEmail(email)) {
@@ -61,7 +56,7 @@ const Form = () => {
         fetch(`${BACKEND_URL}/verify-otp`, {
             method: "POST",
             body: formdata,
-            credentials: 'include',
+            credentials: "include",
         })
             .then((response) => {
                 if (response.ok) {
