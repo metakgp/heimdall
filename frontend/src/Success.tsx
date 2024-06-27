@@ -1,18 +1,23 @@
-import { useSearchParams, redirect } from "react-router-dom";
+import { useSearchParams, redirect, Link } from "react-router-dom";
 import { validRedirect } from "./utils";
+import { useEffect } from "react";
 
 const Success = ({ email }: { email: string }) => {
     const [searchParams] = useSearchParams();
     const givenRedirectUrl = searchParams.get("redirect_url");
     const redirectUrl = validRedirect(givenRedirectUrl);
 
-    setTimeout(() => {
-        if (redirectUrl == "/services") {
-            redirect(redirectUrl);
-        } else {
-            window.open(redirectUrl, "_self");
-        }
-    }, 3000);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (redirectUrl == "/services") {
+                redirect(redirectUrl);
+            } else {
+                window.open(redirectUrl, "_self");
+            }
+        }, 3000);
+
+        return () => clearTimeout(timer)
+    }, [redirectUrl])
 
     return (
         <div className="success-container">
@@ -22,9 +27,9 @@ const Success = ({ email }: { email: string }) => {
                 <br />
                 <span>{email}</span>
             </div>
-            <a href={redirectUrl}>
+            <Link to={redirectUrl}>
                 Redirecting to <span>{redirectUrl}</span> in a few seconds
-            </a>
+            </Link>
         </div>
     );
 };
