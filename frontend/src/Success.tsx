@@ -1,4 +1,4 @@
-import { useSearchParams, redirect, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { validRedirect } from "./utils";
 import { useEffect } from "react";
 
@@ -6,11 +6,12 @@ const Success = ({ email }: { email: string }) => {
     const [searchParams] = useSearchParams();
     const givenRedirectUrl = searchParams.get("redirect_url");
     const redirectUrl = validRedirect(givenRedirectUrl);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            if (redirectUrl == "/services") {
-                redirect(redirectUrl);
+            if (redirectUrl === "/services") {
+                navigate(redirectUrl);
             } else {
                 window.open(redirectUrl, "_self");
             }
