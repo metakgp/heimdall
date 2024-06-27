@@ -9,7 +9,7 @@ function App() {
     const [email, setEmail] = useState("");
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    useEffect(() => {
+    const checkAuth = () => {
         fetch(`${BACKEND_URL}/validate-jwt`, { credentials: "include" }).then(
             (response) => {
                 console.log(response)
@@ -21,11 +21,11 @@ function App() {
                 }
             },
         );
-    }, []);
+    };
 
     return (
         <>
-            <BrowserRouter>
+            <BrowserRouter onChange={checkAuth}>
                 <Routes>
                     <Route
                         path="/"
