@@ -12,6 +12,7 @@ function App() {
     useEffect(() => {
         fetch(`${BACKEND_URL}/validate-jwt`, { credentials: "include" }).then(
             (response) => {
+                console.log(response)
                 if (response.ok) {
                     response.json().then((data) => {
                         setEmail(data.email);
