@@ -37,10 +37,8 @@ const Form = () => {
                         });
                         setOtpRequested(true);
                     } else {
-                        response.text().then((msg) => {
-                            toast.error(msg, {
-                                id: loadingToast,
-                            });
+                        toast.error("Failed to send OTP. Please try again", {
+                            id: loadingToast,
                         });
                     }
                 })
