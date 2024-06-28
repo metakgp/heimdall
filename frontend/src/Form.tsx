@@ -128,7 +128,7 @@ const Form = ({isAuthenticated, setIsAuthenticated, email, setEmail }: FormProps
                             placeholder="Enter OTP"
                         />
                         <button onClick={verifyOTP}>Verify</button>
-                        {timer==="00:00"?<button onClick={requestOTP}>Resend OTP</button>:<button style={{backgroundColor:"#f2b183"}}disabled={true}>{timer}</button>}
+                        {timer==="00:00"?<button onClick={requestOTP}>Resend OTP</button>:<button style={{backgroundColor:"#f2b183", cursor:"wait"}}disabled={true}>{timer}</button>}
                     </>
                 ) : (
                     <button onClick={requestOTP}>Send OTP</button>
