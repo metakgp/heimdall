@@ -364,9 +364,6 @@ func handleValidateJwt(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
 	res.WriteHeader(http.StatusOK)
 	res.Write(claimsJSON)
-	res.Header().Set("Content-Type", "text/plain")
-	res.Write([]byte("User JWT was verified"))
-
 }
 
 func main() {
