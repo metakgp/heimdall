@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -46,6 +47,25 @@ type OtpResponse struct {
 	Email     string `json:"email"`
 	OtpStatus bool   `json:"otp_status"`
 	Timestamp int    `json:"timestamp"`
+}
+
+type responseRecorder struct {
+	http.ResponseWriter
+	status int
+	size   int
+}
+
+func (r *responseRecorder) WriteHeader(statusCode int) {
+	r.status = statusCode
+	r.ResponseWriter.WriteHeader(statusCode)
+}
+
+func LoggerMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		recorder := &responseRecorder{w, http.StatusOK, 0}
+		next.ServeHTTP(recorder, r)
+		log.Printf("INFO:\t%s - %q %s %d %s\n", r.RemoteAddr, r.Method, r.RequestURI, recorder.status, http.StatusText(recorder.status))
+	})
 }
 
 func getJwtKey() (string, error) {
@@ -293,6 +313,9 @@ func handleVerifyOtp(res http.ResponseWriter, req *http.Request) {
 	}
 
 	http.SetCookie(res, &cookie)
+	res.WriteHeader(http.StatusOK)
+	res.Header().Set("Content-Type", "text/plain")
+	res.Write([]byte("OTP Verified Successfully"))
 }
 
 func handleValidateJwt(res http.ResponseWriter, req *http.Request) {
@@ -316,6 +339,9 @@ func handleValidateJwt(res http.ResponseWriter, req *http.Request) {
 			http.Error(res, ErrJwtTokenExpired.Error(), http.StatusUnauthorized)
 			return
 		}
+
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	if !token.Valid {
@@ -336,15 +362,17 @@ func handleValidateJwt(res http.ResponseWriter, req *http.Request) {
 	}
 
 	res.Header().Set("Content-Type", "application/json")
+	res.WriteHeader(http.StatusOK)
 	res.Write(claimsJSON)
 }
+
 func main() {
 	godotenv.Load()
 
 	initMailer()
 
 	generalCors := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173", "https://heimdall.metakgp.org"},
+		AllowedOrigins:   []string{"http://localhost", "https://heimdall.metakgp.org"},
 		AllowCredentials: true,
 	})
 
@@ -359,7 +387,7 @@ func main() {
 	handler := cors.AllowAll().Handler(mux)
 
 	fmt.Println("Heimdall Server running on port : 3333")
-	err := http.ListenAndServe(":3333", handler)
+	err := http.ListenAndServe(":3333", LoggerMiddleware(handler))
 	if errors.Is(err, http.ErrServerClosed) {
 		fmt.Printf("server closed\n")
 	} else if err != nil {
