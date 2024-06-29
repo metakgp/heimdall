@@ -1,4 +1,4 @@
-import { servicesList } from "./constants";
+import { ALLOWED_SERVICES } from "./constants";
 
 const Services = () => {
     return (
@@ -7,9 +7,9 @@ const Services = () => {
             <div className="subtitle">
                 Click on any of the links below to visit
             </div>
-            {servicesList.map((service) => (
-                <a className="service" key={service} href={service}>
-                    {service}
+            {Object.entries(ALLOWED_SERVICES).map(([url, serviceName]) => (
+                <a className="service" key={url} href={url}>
+                    {serviceName}
                 </a>
             ))}
         </div>
