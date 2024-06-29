@@ -30,7 +30,7 @@ const Success = ({ email }: { email: string }) => {
                 <span>{email}</span>
             </div>
             <Link to={serviceLink}>
-                Redirecting to <span>{serviceName}</span> in a few seconds
+                Redirecting to <span>{serviceName}</span>
             </Link>
         </div>
     );
