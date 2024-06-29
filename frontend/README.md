@@ -21,7 +21,7 @@ Then follow the given steps to start the development server:
    ```
 3. Start the server
    ```sh
-   npm run dev
+   pnpm dev
    ```
 
 This setup will launch the frontend. To start backend server also, please follow the instructions [here](https://github.com/metakgp/heimdall/blob/master/README.md#getting-started)
