@@ -123,29 +123,14 @@ _Now that the environment has been set up and configured to properly compile and
    ```sh
    go build
    ```
-5. Install node modules
-   ```sh
-   cd frontend
-   npm install
-   ```
-   It is suggested to use pnpm as package manager due to its efficiency. To use pnpm, run following commands instead of above:
-   ```sh
-   npm install -g pnpm
-   cd frontend
-   pnpm install
-   ```
-
-6. Start development server
-   ```sh
-   npm run dev
-   cd ..
-   ```
-7. Execute the script
+5. Execute the script
    ```sh
    ./heimdall
    ```
 
 When prompted to enter authorization code, visit the link provided in terminal which will redirect to localhost. Then inspect the url after redirection and copy the string after `code=` and paste it in the terminal. This will create `token.json` file. You need to create this token only once and it will be valid for 6 months.
+
+Above steps set up the backend server required for Heimdall. Now, to get access to services [Naarad](https://github.com/metakgp/naarad) and [Chillzone](https://github.com/metakgp/chillzone), enter the institute mail id at the frontend. To launch the frontend, please refer the instructions [here](https://github.com/metakgp/heimdall/blob/master/frontend/README.md)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
