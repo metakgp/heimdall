@@ -1,4 +1,4 @@
-import { servicesList } from "./constants";
+import { ALLOWED_SERVICES } from "./constants";
 
 export const validateEmail = (email: string): boolean => {
     return (
@@ -7,16 +7,16 @@ export const validateEmail = (email: string): boolean => {
     );
 };
 
-export const validRedirect = (link: string | null): string => {
+export const validRedirect = (link: string | null): { serviceName: string, serviceLink: string } => {
     if (!link) {
-        return "/services";
+        return { serviceName: "Services Page", serviceLink: "/services" };
     }
 
-    for (var service of servicesList) {
-        if (link.startsWith(service)) {
-            return link;
+    for (const serviceUrl in ALLOWED_SERVICES) {
+        if (link.startsWith(serviceUrl)) {
+            return { serviceName: ALLOWED_SERVICES[serviceUrl], serviceLink: link };
         }
     }
 
-    return "/services";
+    return { serviceName: "Services Page", serviceLink: "/services" };
 };
