@@ -1,28 +1,30 @@
 services:
-  heimdall:
-    build: "."
-    restart: always
-    environment:
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - OTP_VALIDITY_PERIOD=${OTP_VALIDITY_PERIOD}
-      - RESEND_OTP_COOLDOWN=${RESEND_OTP_COOLDOWN}
-      - JWT_EXPIRY_DAYS=${JWT_EXPIRY_DAYS}
+    heimdall:
+        image: metakgporg/heimdall
+        container_name: heimdall
+        build: .
+        restart: always
+        environment:
+            - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+            - OTP_VALIDITY_PERIOD=${OTP_VALIDITY_PERIOD}
+            - RESEND_OTP_COOLDOWN=${RESEND_OTP_COOLDOWN}
+            - JWT_EXPIRY_DAYS=${JWT_EXPIRY_DAYS}
 
-    networks:
-      metaploy-network:
-        aliases:
-          - heimdall
-    volumes:
-      - nginx-config-volume:/etc/nginx/sites-enabled
-      - ./credentials.json:/credentials.json
-      - ./token.json:/token.json
+        networks:
+            metaploy-network:
+                aliases:
+                    - heimdall
+        volumes:
+            - nginx-config-volume:/etc/nginx/sites-enabled
+            - ./credentials.json:/credentials.json
+            - ./token.json:/token.json
 
 networks:
-  metaploy-network:
-    external: true
-    name: metaploy-network
+    metaploy-network:
+        external: true
+        name: metaploy-network
 
 volumes:
-  nginx-config-volume:
-    external: true
-    name: metaploy-nginx-config-volume
+    nginx-config-volume:
+        external: true
+        name: metaploy-nginx-config-volume

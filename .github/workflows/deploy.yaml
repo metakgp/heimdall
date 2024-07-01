@@ -14,8 +14,50 @@ on:
             - ".github/workflows/deploy.yaml"
 
 jobs:
+    dockerhub:
+        name: Publish Docker Image(s) to Dockerhub
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Set up QEMU
+              uses: docker/setup-qemu-action@v3
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Login to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                  username: ${{ secrets.DOCKERHUB_USERNAME }}
+                  password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+            - name: Cache Docker layers for Heimdall
+              uses: actions/cache@v3
+              with:
+                  path: /tmp/.buildx-cache-heimdall
+                  key: ${{ runner.os }}-buildx-heimdall-${{ github.sha }}
+                  restore-keys: |
+                      ${{ runner.os }}-buildx-heimdall-
+            - name: Build & Push Heimdall
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  push: true
+                  tags: ${{ secrets.DOCKERHUB_USERNAME }}/heimdall:latest
+                  cache-from: type=local,src=/tmp/.buildx-cache-heimdall
+                  cache-to: type=local,dest=/tmp/.buildx-cache-heimdall-new,mode=max
+
+            - name: Move Heimdall cache
+              run: |
+                  rm -rf /tmp/.buildx-cache-heimdall
+                  mv /tmp/.buildx-cache-heimdall-new /tmp/.buildx-cache-heimdall
+
     push:
-        name: Push Stage
+        name: Push Code Stage
+        needs: dockerhub
         runs-on: ubuntu-latest
 
         steps:
@@ -35,13 +77,13 @@ jobs:
                       sudo git fetch origin
                       sudo git reset --hard origin/master
 
-    build:
-        name: Build Stage
+    pull:
+        name: Pull Image Stage
         needs: push
         runs-on: ubuntu-latest
 
         steps:
-            - name: Build the latest container(s)
+            - name: Pull the latest images(s)
               uses: appleboy/ssh-action@master
               env:
                   PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
@@ -54,11 +96,11 @@ jobs:
                   script_stop: true
                   script: |
                       cd "${PROJECT_DIR}/"
-                      sudo docker compose build
+                      sudo docker compose pull
 
     deploy:
         name: Deploy Stage
-        needs: [push, build]
+        needs: pull
         runs-on: ubuntu-latest
 
         steps:
