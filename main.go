@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/joho/godotenv"
 	"github.com/likexian/whois"
 	"github.com/pquerna/otp/totp"
 	"github.com/rs/cors"
@@ -369,8 +368,6 @@ func handleValidateJwt(res http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	godotenv.Load()
-
 	initMailer()
 
 	generalCors := cors.New(cors.Options{

@@ -10,7 +10,7 @@ COPY mail.go main.go ./
 
 RUN CGO_ENABLED=1 GOOS=linux go build -o ./build --tags "fts5" -a -ldflags '-linkmode external -extldflags "-static"' .
 
-FROM alpine:latest as app
+FROM alpine:latest AS app
 
 RUN apk --no-cache add bash nginx ca-certificates tzdata
 
