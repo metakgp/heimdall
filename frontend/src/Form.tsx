@@ -5,36 +5,52 @@ import { BACKEND_URL } from "./constants";
 import Success from "./Success";
 
 type FormProps = {
-    isAuthenticated: boolean
-    setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
-    email: string
-    setEmail: React.Dispatch<React.SetStateAction<string>>
-}
+    isAuthenticated: boolean;
+    setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-const Form = ({isAuthenticated, setIsAuthenticated, email, setEmail }: FormProps) => {
+const Form = ({ isAuthenticated, setIsAuthenticated }: FormProps) => {
+    const [email, setEmail] = useState("");
     const [otpRequested, setOtpRequested] = useState(false);
     const [otp, setOtp] = useState("");
     const [timer, setTimer] = useState("01:00");
     const [timerStart, setTimerStart] = useState<number | null>(null);
 
     useEffect(() => {
+        fetch(`${BACKEND_URL}/validate-jwt`, { credentials: "include" }).then(
+            (response) => {
+                if (response.ok) {
+                    response.json().then((data) => {
+                        setEmail(data.email);
+                        setIsAuthenticated(true);
+                    });
+                }
+            },
+        );
+    }, []);
+
+    useEffect(() => {
         if (!otpRequested || timerStart === null) return;
 
-        // const startTime = Date.now(); 
+        // const startTime = Date.now();
         const countdown = setInterval(() => {
-            const totalSeconds = Math.max(60 - Math.floor((Date.now() - timerStart) / 1000), 0);
+            const totalSeconds = Math.max(
+                60 - Math.floor((Date.now() - timerStart) / 1000),
+                0,
+            );
             const minutes = Math.floor(totalSeconds / 60);
             const seconds = totalSeconds % 60;
-          setTimer(
-             (minutes > 9 ? minutes : "0" + minutes) + ":" + (seconds > 9 ? seconds : "0" + seconds)
+            setTimer(
+                (minutes > 9 ? minutes : "0" + minutes) +
+                    ":" +
+                    (seconds > 9 ? seconds : "0" + seconds),
             );
             if (minutes === 0 && seconds === 0) {
-              clearInterval(countdown);
+                clearInterval(countdown);
             }
-          }, 1000);
-          return () => clearInterval(countdown); 
-        }, [otpRequested, timerStart]);
-
+        }, 1000);
+        return () => clearInterval(countdown);
+    }, [otpRequested, timerStart]);
 
     const requestOTP = () => {
         if (validateEmail(email)) {
@@ -54,7 +70,8 @@ const Form = ({isAuthenticated, setIsAuthenticated, email, setEmail }: FormProps
                         setTimerStart(Date.now());
                         setTimer("01:00");
                     } else {
-                        response.text().then((msg) => {  // Show message to user in case he refreshes page and attempts to request otp again
+                        response.text().then((msg) => {
+                            // Show message to user in case he refreshes page and attempts to request otp again
                             toast.error(msg, {
                                 id: loadingToast,
                             });
@@ -128,7 +145,19 @@ const Form = ({isAuthenticated, setIsAuthenticated, email, setEmail }: FormProps
                             placeholder="Enter OTP"
                         />
                         <button onClick={verifyOTP}>Verify</button>
-                        {timer==="00:00"?<button onClick={requestOTP}>Resend OTP</button>:<button style={{backgroundColor:"#f2b183", cursor:"wait"}}disabled={true}>{timer}</button>}
+                        {timer === "00:00" ? (
+                            <button onClick={requestOTP}>Resend OTP</button>
+                        ) : (
+                            <button
+                                style={{
+                                    backgroundColor: "#f2b183",
+                                    cursor: "wait",
+                                }}
+                                disabled={true}
+                            >
+                                {timer}
+                            </button>
+                        )}
                     </>
                 ) : (
                     <button onClick={requestOTP}>Send OTP</button>
