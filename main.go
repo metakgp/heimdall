@@ -381,7 +381,7 @@ func main() {
 	specialCors := cors.AllowAll()
 
 	mux := http.NewServeMux()
-	mux.Handle("/campus-check", specialCors.Handler(http.HandlerFunc(handleCampusCheck)))
+	mux.Handle("/", specialCors.Handler(http.HandlerFunc(handleCampusCheck)))
 	mux.Handle("/get-otp", generalCors.Handler(http.HandlerFunc(handleGetOtp)))
 	mux.Handle("/verify-otp", generalCors.Handler(http.HandlerFunc(handleVerifyOtp)))
 	mux.Handle("/validate-jwt", generalCors.Handler(http.HandlerFunc(handleValidateJwt)))
