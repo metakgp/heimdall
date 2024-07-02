@@ -3,7 +3,7 @@ import { ALLOWED_SERVICES } from "./constants";
 const Services = () => {
     return (
         <div className="services-container">
-            <div className="title">Metakgp Services</div>
+            <div className="title">MetaKGP Services</div>
             <div className="subtitle">
                 Click on any of the links below to visit
             </div>
