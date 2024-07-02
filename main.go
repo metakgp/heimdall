@@ -125,6 +125,11 @@ func generateOtp(user User) (bool, error) {
 
 func handleCampusCheck(res http.ResponseWriter, req *http.Request) {
 	clientIP := req.Header.Get("X-Forwarded-For")
+	if strings.Contains(clientIP, ",") {
+		ips := strings.Split(clientIP, ",")
+		clientIP = strings.TrimSpace(ips[0])
+	}
+
 	whoisResponse, err := whois.Whois(clientIP)
 	if err != nil {
 		fmt.Println(err)
@@ -145,6 +150,8 @@ func handleCampusCheck(res http.ResponseWriter, req *http.Request) {
 
 	if len(match) >= 2 {
 		netname := match[1]
+		fmt.Println("[NETNAME FOUND] ~", netname)
+
 		if netname == "IITKGP-IN" {
 			response["is_inside_kgp"] = true
 			res.WriteHeader(http.StatusAccepted)
@@ -154,6 +161,7 @@ func handleCampusCheck(res http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		fmt.Println("[NETNAME NOT FOUND]")
+
 		response["is_inside_kgp"] = false
 		res.WriteHeader(http.StatusUnauthorized)
 	}
