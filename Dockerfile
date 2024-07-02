@@ -12,7 +12,7 @@ RUN CGO_ENABLED=1 GOOS=linux go build -o ./build --tags "fts5" -a -ldflags '-lin
 
 FROM alpine:latest AS app
 
-RUN apk --no-cache add bash nginx ca-certificates tzdata
+RUN apk --no-cache add ca-certificates tzdata bash
 
 ENV TZ="Asia/Kolkata"
 
