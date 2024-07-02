@@ -148,8 +148,10 @@ func handleCampusCheck(res http.ResponseWriter, req *http.Request) {
 		netname := match[1]
 		if netname == "IITKGP-IN" {
 			response["is_inside_kgp"] = true
+			res.WriteHeader(http.StatusAccepted)
 		} else {
 			response["is_inside_kgp"] = false
+			res.WriteHeader(http.StatusUnauthorized)
 		}
 	} else {
 		fmt.Println("Netname not found in the whois response.")
