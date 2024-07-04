@@ -63,7 +63,7 @@ func LoggerMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		recorder := &responseRecorder{w, http.StatusOK, 0}
 		next.ServeHTTP(recorder, r)
-		log.Printf("INFO:\t%s - %q %s %d %s\n", r.Header.Get("X-Forwarded-For"), r.Method, r.RequestURI, recorder.status, http.StatusText(recorder.status))
+		log.Printf("INFO:\t%s - %q %s %d %s\n", r.Header.Get("X-Real-IP"), r.Method, r.RequestURI, recorder.status, http.StatusText(recorder.status))
 	})
 }
 
@@ -124,7 +124,7 @@ func generateOtp(user User) (bool, error) {
 }
 
 func handleCampusCheck(res http.ResponseWriter, req *http.Request) {
-	clientIP := req.Header.Get("X-Forwarded-For")
+	clientIP := req.Header.Get("X-Real-IP")
 	if strings.Contains(clientIP, ",") {
 		ips := strings.Split(clientIP, ",")
 		clientIP = strings.TrimSpace(ips[0])
