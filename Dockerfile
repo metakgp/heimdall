@@ -8,7 +8,7 @@ RUN go mod download
 
 COPY mail.go main.go ./
 
-RUN CGO_ENABLED=1 GOOS=linux go build -o ./build --tags "fts5" -a -ldflags '-linkmode external -extldflags "-static"' .
+RUN CGO_ENABLED=1 GOOS=linux go build -o ./build -a -ldflags '-linkmode external -extldflags "-static"' .
 
 FROM alpine:latest AS app
 
