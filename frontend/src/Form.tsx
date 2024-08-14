@@ -84,7 +84,7 @@ const Form = ({ isAuthenticated, setIsAuthenticated }: FormProps) => {
                     });
                 });
         } else {
-            toast.error("Invalid email address. Please use your kgpian email");
+            toast.error("Invalid email address. Please use your institute email");
             return;
         }
     };
@@ -127,14 +127,14 @@ const Form = ({ isAuthenticated, setIsAuthenticated }: FormProps) => {
             <div className="info">
                 <div className="title">Heimdall</div>
                 <p>The gatekeeper to Metakgp services</p>
-                <p>Please verify using your kgpian email to continue</p>
+                <p>Please verify using your institute email to continue</p>
             </div>
             <div className="form">
                 <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your kgpian email"
+                    placeholder="Enter your institute email"
                 />
                 {otpRequested ? (
                     <>

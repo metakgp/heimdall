@@ -182,9 +182,9 @@ func handleGetOtp(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// check for KGPian email
-	if !strings.HasSuffix(email, "@kgpian.iitkgp.ac.in") {
-		http.Error(res, "Invalid email domain. Must be @kgpian.iitkgp.ac.in", http.StatusBadRequest)
+	// check for institute email
+	if !strings.HasSuffix(email, "@kgpian.iitkgp.ac.in") && !strings.HasSuffix(email, "@iitkgp.ac.in") {
+		http.Error(res, "Invalid email domain. Only @kgpian.iitkgp.ac.in & @iitkgp.ac.in are allowed", http.StatusBadRequest)
 		return
 	}
 
