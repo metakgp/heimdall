@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/joho/godotenv"
 	"github.com/likexian/whois"
 	"github.com/pquerna/otp/totp"
 	"github.com/rs/cors"
@@ -64,7 +63,7 @@ func LoggerMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		recorder := &responseRecorder{w, http.StatusOK, 0}
 		next.ServeHTTP(recorder, r)
-		log.Printf("INFO:\t%s - %q %s %d %s\n", r.RemoteAddr, r.Method, r.RequestURI, recorder.status, http.StatusText(recorder.status))
+		log.Printf("INFO:\t%s - %q %s %d %s\n", r.Header.Get("X-Real-IP"), r.Method, r.RequestURI, recorder.status, http.StatusText(recorder.status))
 	})
 }
 
@@ -125,7 +124,12 @@ func generateOtp(user User) (bool, error) {
 }
 
 func handleCampusCheck(res http.ResponseWriter, req *http.Request) {
-	clientIP := req.Header.Get("X-Forwarded-For")
+	clientIP := req.Header.Get("X-Real-IP")
+	if strings.Contains(clientIP, ",") {
+		ips := strings.Split(clientIP, ",")
+		clientIP = strings.TrimSpace(ips[0])
+	}
+
 	whoisResponse, err := whois.Whois(clientIP)
 	if err != nil {
 		fmt.Println(err)
@@ -146,14 +150,20 @@ func handleCampusCheck(res http.ResponseWriter, req *http.Request) {
 
 	if len(match) >= 2 {
 		netname := match[1]
+		fmt.Println("[NETNAME FOUND] ~", netname)
+
 		if netname == "IITKGP-IN" {
 			response["is_inside_kgp"] = true
+			res.WriteHeader(http.StatusAccepted)
 		} else {
 			response["is_inside_kgp"] = false
+			res.WriteHeader(http.StatusUnauthorized)
 		}
 	} else {
-		fmt.Println("Netname not found in the whois response.")
+		fmt.Println("[NETNAME NOT FOUND]")
+
 		response["is_inside_kgp"] = false
+		res.WriteHeader(http.StatusUnauthorized)
 	}
 
 	res.Header().Set("Content-Type", "application/json")
@@ -172,9 +182,9 @@ func handleGetOtp(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// check for KGPian email
-	if !strings.HasSuffix(email, "@kgpian.iitkgp.ac.in") {
-		http.Error(res, "Invalid email domain. Must be @kgpian.iitkgp.ac.in", http.StatusBadRequest)
+	// check for institute email
+	if !strings.HasSuffix(email, "@kgpian.iitkgp.ac.in") && !strings.HasSuffix(email, "@iitkgp.ac.in") {
+		http.Error(res, "Invalid email domain. Only @kgpian.iitkgp.ac.in & @iitkgp.ac.in are allowed", http.StatusBadRequest)
 		return
 	}
 
@@ -367,8 +377,6 @@ func handleValidateJwt(res http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	godotenv.Load()
-
 	initMailer()
 
 	generalCors := cors.New(cors.Options{
@@ -379,7 +387,7 @@ func main() {
 	specialCors := cors.AllowAll()
 
 	mux := http.NewServeMux()
-	mux.Handle("/campus-check", specialCors.Handler(http.HandlerFunc(handleCampusCheck)))
+	mux.Handle("/", specialCors.Handler(http.HandlerFunc(handleCampusCheck)))
 	mux.Handle("/get-otp", generalCors.Handler(http.HandlerFunc(handleGetOtp)))
 	mux.Handle("/verify-otp", generalCors.Handler(http.HandlerFunc(handleVerifyOtp)))
 	mux.Handle("/validate-jwt", generalCors.Handler(http.HandlerFunc(handleValidateJwt)))

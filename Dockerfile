@@ -1,15 +1,27 @@
-FROM golang:1.21
+FROM golang:1.21 AS builder
 
-# Copy metaploy configuration
-COPY metaploy/heimdall.metaploy.conf /
-COPY metaploy/postinstall.sh /
+WORKDIR /src
 
-# Copy source files
-WORKDIR /
-COPY go.mod go.sum main.go mail.go /
+COPY go.mod go.sum ./
 
-# Build go package
-RUN go build
+RUN go mod download
 
-# Run postinstall script and the binary
-CMD ["/postinstall.sh", "/heimdall"]
+COPY mail.go main.go ./
+
+RUN CGO_ENABLED=1 GOOS=linux go build -o ./build -a -ldflags '-linkmode external -extldflags "-static"' .
+
+FROM alpine:latest AS app
+
+RUN apk --no-cache add ca-certificates tzdata bash
+
+ENV TZ="Asia/Kolkata"
+
+WORKDIR /app
+
+COPY metaploy/ ./
+
+RUN chmod +x ./postinstall.sh
+
+COPY --from=builder /src/build .
+
+CMD ["./postinstall.sh", "./build"]
