@@ -9,4 +9,5 @@ export type AllowedServices = {
 export const ALLOWED_SERVICES: AllowedServices = {
     "https://chill.metakgp.org": "Chillzone",
     "https://naarad.metakgp.org": "Naarad",
+    "https://travel.metakgp.org": "Travel Buddy",
 };
