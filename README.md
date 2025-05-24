@@ -164,7 +164,11 @@ While just doing this would have sufficed, we do not know whether these Public I
   _For complete Whois information check [here](https://whois.domaintools.com/203.110.242.30)._
 </div>
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p>  
+
+When user enters institute mail id and verifies using OTP, a cookie is generated which is valid only for the domain `.metakgp.org` (including its subdomains like `naarad.metakgp`, `gyft.metakgp`, etc.). This cookie contains user's institute mail id, which can be retrieved from it.  
+
+The endpoint `/validate-jwt` validates the cookie which is sent along with the request to access internal services like Naarad and Gyft. Once user's mail id is verified, he/she can access above services, making sure that they are accessible only to institute students.  
 
 All this time you might be wondering why you need a different server to just check this. Can't we do this in any project where such a feature is required?
 
