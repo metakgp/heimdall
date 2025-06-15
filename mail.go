@@ -142,8 +142,8 @@ func sendMail(receiverEmail string, subject string, body string) (bool, error) {
 }
 
 func sendOTP(receiverEmail string, otp string) (bool, error) {
-	subject := "Metakgp verification OTP"
-	body := "OTP for Sign In into Heimdall Portal of Metakgp, IIT Kharagpur is " + otp
+	subject := "MetaKGP verification OTP"
+	body := "OTP for Sign In into Heimdall Portal of MetaKGP, IIT Kharagpur is " + otp
 
 	return sendMail(receiverEmail, subject, body)
 }
