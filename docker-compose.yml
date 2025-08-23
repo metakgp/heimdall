@@ -14,6 +14,11 @@ services:
             - nginx-config-volume:/etc/nginx/sites-enabled
             - ./credentials.json:/app/credentials.json
             - ./token.json:/app/token.json
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "100m"
+                max-file: "3"
 
 networks:
     metaploy-network:
