@@ -171,12 +171,11 @@ Also, one service - to protect all of our services. Reducing code repetition and
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Maintainer(s)
-
-<!-- UPDATE -->
-
--   [Chirag Ghosh](https://github.com/chirag-ghosh)
--   [Arpit Bhardwaj](https://github.com/proffapt)
 -   [Saharsh Agrawal](https://github.com/saharsh-agrawal)
+
+## Past Maintainer(s)
+-   [Arpit Bhardwaj](https://github.com/proffapt)
+-   [Chirag Ghosh](https://github.com/chirag-ghosh)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
