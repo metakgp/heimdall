@@ -7,3 +7,5 @@ heimdall
 credentials.json
 token.json
 .env
+
+heimdall.exe

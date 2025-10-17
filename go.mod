@@ -4,6 +4,7 @@ go 1.21.1
 
 require (
 	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/joho/godotenv v1.5.1
 	github.com/likexian/whois v1.15.1
 	github.com/pquerna/otp v1.4.0
 	golang.org/x/oauth2 v0.21.0

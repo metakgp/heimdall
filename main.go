@@ -16,6 +16,7 @@ import (
 	"github.com/likexian/whois"
 	"github.com/pquerna/otp/totp"
 	"github.com/rs/cors"
+	"github.com/joho/godotenv"
 )
 
 const COOKIE_DOMAIN = ".metakgp.org"
@@ -85,6 +86,14 @@ func jwtKeyFunc(*jwt.Token) (interface{}, error) {
 	}
 
 	return []byte(key), err
+}
+
+// isDevelopmentMode returns true when DEVELOPMENT_MODE env var is set to a truthy value.
+// Accepted truthy values (case-insensitive): true
+// Any other value (including empty / unset) returns false (production mode).
+func isDevelopmentMode() bool {
+	val := strings.ToLower(strings.TrimSpace(os.Getenv("DEVELOPMENT_MODE")))
+	return val == "true"
 }
 
 func generateOtp(user User) (bool, error) {
@@ -311,15 +320,28 @@ func handleVerifyOtp(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// Cookie configuration adapts to development mode to simplify local testing.
+	dev := isDevelopmentMode()
+	cookieDomain := COOKIE_DOMAIN
+	secureCookie := true
+	sameSiteMode := http.SameSiteNoneMode
+	if dev {
+		// In development we typically run on http://localhost so Secure cookies would be dropped by browsers.
+		cookieDomain = "localhost"
+		secureCookie = false
+		// Lax prevents most CSRF while still allowing form navigations; suitable for local dev.
+		sameSiteMode = http.SameSiteLaxMode
+	}
+
 	cookie := http.Cookie{
 		Name:     "heimdall",
 		Value:    tokenString,
 		Expires:  expiryTime,
 		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteNoneMode,
+		Secure:   secureCookie,
+		SameSite: sameSiteMode,
 		Path:     "/",
-		Domain:   COOKIE_DOMAIN,
+		Domain:   cookieDomain,
 	}
 
 	http.SetCookie(res, &cookie)
@@ -377,10 +399,25 @@ func handleValidateJwt(res http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
+	// Load environment variables from .env if present. Existing env vars override .env.
+	if err := godotenv.Load(); err != nil {
+		// Not fatal if .env is missing (e.g., production container with real env vars)
+		fmt.Println("No .env file found or could not be loaded, proceeding with existing environment")
+	}
 	initMailer()
 
+	dev := isDevelopmentMode()
+
+	var allowedOrigins []string
+	if dev {
+		// Typical local development ports for Vite or other dev servers.
+		allowedOrigins = []string{"http://localhost", "http://localhost:5173"}
+	} else {
+		allowedOrigins = []string{"https://heimdall.metakgp.org"}
+	}
+
 	generalCors := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost", "https://heimdall.metakgp.org"},
+		AllowedOrigins:   allowedOrigins,
 		AllowCredentials: true,
 	})
 

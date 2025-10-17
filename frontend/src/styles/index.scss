@@ -1,4 +1,5 @@
-$font-family: system-ui, Arial, sans-serif;
+@use "globals" as *; // brings in $font-family
+@use "app";
 
 :root {
     font-family: $font-family;
@@ -18,5 +19,3 @@ html {
 body {
     background-color: #fefaf6;
 }
-
-@import "app.scss";

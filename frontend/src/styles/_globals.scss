@@ -1,0 +1,4 @@
+// Shared global style variables & mixins
+// Using a standalone partial to allow modern Sass @use instead of deprecated @import.
+
+$font-family: system-ui, Arial, sans-serif;
