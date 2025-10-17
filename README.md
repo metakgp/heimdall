@@ -37,16 +37,16 @@
 <details>
 <summary>Table of Contents</summary>
 
-- [About The Project](#about-the-project)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [How to use](#how-to-use)
-- [How does this work?](#how-does-this-work)
-  - [Why heimdall as a service?](#why-heimdall-as-a-service)
-- [Maintainer(s)](#maintainers)
-- [Contact](#contact)
-- [Additional documentation](#additional-documentation)
+-   [About The Project](#about-the-project)
+-   [Getting Started](#getting-started)
+    -   [Prerequisites](#prerequisites)
+    -   [Installation](#installation)
+-   [How to use](#how-to-use)
+-   [How does this work?](#how-does-this-work)
+    -   [Why heimdall as a service?](#why-heimdall-as-a-service)
+-   [Maintainer(s)](#maintainers)
+-   [Contact](#contact)
+-   [Additional documentation](#additional-documentation)
 
 </details>
 
@@ -73,16 +73,17 @@ To set up a local instance of the application, follow the steps below.
 
 The following dependencies are required to be installed for the project to function properly:
 
-- [go](https://go.dev/)
-- [nodejs](https://nodejs.org/en/download/package-manager)
+-   [go](https://go.dev/)
+-   [nodejs](https://nodejs.org/en/download/package-manager)
 
 To create the `credentials.json` file, set up the things below by following the respective guides:
-- [OAuth consent screen](https://developers.google.com/workspace/guides/configure-oauth-consent#configure_oauth_consent).
-- [OAuth client ID credentials](https://developers.google.com/workspace/guides/create-credentials#oauth-client-id).
-- While creating OAuth client ID credentials, set the redirect URL to any port of localhost.
-- Save the downloaded JSON file as `credentials.json` in the project's root directory.
-- Then enable [Gmail API](https://console.cloud.google.com/apis/library/gmail.googleapis.com) to enable receiving OTP.
-   
+
+-   [OAuth consent screen](https://developers.google.com/workspace/guides/configure-oauth-consent#configure_oauth_consent).
+-   [OAuth client ID credentials](https://developers.google.com/workspace/guides/create-credentials#oauth-client-id).
+-   While creating OAuth client ID credentials, set the redirect URL to any port of localhost.
+-   Save the downloaded JSON file as `credentials.json` in the project's root directory.
+-   Then enable [Gmail API](https://console.cloud.google.com/apis/library/gmail.googleapis.com) to enable receiving OTP.
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Installation
@@ -92,28 +93,30 @@ _Now that the environment has been set up and configured to properly compile and
 <!-- UPDATE -->
 
 1. Clone the repository
-   ```sh
-   git clone https://github.com/metakgp/heimdall.git
-   ```
+    ```sh
+    git clone https://github.com/metakgp/heimdall.git
+    ```
 2. Configure environment variables
-   ```sh
-   cd ./heimdall
-   cp .env.template .env
-   ```
-   Choose a strong JWT_SECRET_KEY and edit the `.env` file accordingly.
+
+    ```sh
+    cd ./heimdall
+    cp .env.template .env
+    ```
+
+    Choose a strong JWT_SECRET_KEY and edit the `.env` file accordingly.
 
 3. Install Go dependencies
-   ```sh
-   go mod download
-   ```
+    ```sh
+    go mod download
+    ```
 4. Compile the code
-   ```sh
-   go build
-   ```
+    ```sh
+    go build
+    ```
 5. Execute the script
-   ```sh
-   ./heimdall
-   ```
+    ```sh
+    ./heimdall
+    ```
 
 When prompted to enter the authorization code, visit the link provided in the terminal, which will redirect to localhost. Then, inspect the URL after redirection and copy the string after `code=` and paste it in the terminal. This will create a `token.json` file. You need to create this token only once, and it will be valid for 6 months.
 
@@ -146,13 +149,14 @@ While just doing this would have sufficed, we do not know whether these Public I
     <img width="80%" alt="image" src="./assets/whois.png">
   </a>
 
-  _For complete Whois information, check [here](https://whois.domaintools.com/203.110.242.30)._
+_For complete Whois information, check [here](https://whois.domaintools.com/203.110.242.30)._
+
 </div>
 
 > [!Note]
 > The above functionality is implemented in the main (`/`) route
 
-When the user enters the institute mail ID, an OTP is sent (`/get-otp`) and once they verify the OTP (`/verfiy-otp`), a cookie is generated which is valid only for the domain `*.metakgp.org` (including its subdomains like `naarad.metakgp`, `gyft.metakgp`, etc.). This cookie contains the user's institute mail ID, which can be retrieved from it.  
+When the user enters the institute mail ID, an OTP is sent (`/get-otp`) and once they verify the OTP (`/verfiy-otp`), a cookie is generated which is valid only for the domain `*.metakgp.org` (including its subdomains like `naarad.metakgp`, `gyft.metakgp`, etc.). This cookie contains the user's institute mail ID, which can be retrieved from it.
 
 The endpoint `/validate-jwt` validates the cookie that is sent along with the request to access internal services like Naarad and Gyft. Once the user's mail ID is verified, they can access the above services, making sure that they are accessible only to institute students.
 
@@ -164,14 +168,14 @@ Well yes. Provided it has a backend server. This cannot be done in the front-end
 
 Also, one service - to protect all of our services. Reducing code repetition and easy integration.
 
-<p align="right">(<a href="#top">back to top</a>)</p>  
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Maintainer(s)
+-   [Saharsh Agrawal](https://github.com/saharsh-agrawal)
 
-<!-- UPDATE -->
-
-- [Chirag Ghosh](https://github.com/chirag-ghosh)
-- [Arpit Bhardwaj](https://github.com/proffapt)
+## Past Maintainer(s)
+-   [Arpit Bhardwaj](https://github.com/proffapt)
+-   [Chirag Ghosh](https://github.com/chirag-ghosh)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -203,10 +207,10 @@ Also, one service - to protect all of our services. Reducing code repetition and
 
 ## Additional documentation
 
-- [License](/LICENSE)
-- [Code of Conduct](/.github/CODE_OF_CONDUCT.md)
-- [Security Policy](/.github/SECURITY.md)
-- [Contribution Guidelines](/.github/CONTRIBUTING.md)
+-   [License](/LICENSE)
+-   [Code of Conduct](/.github/CODE_OF_CONDUCT.md)
+-   [Security Policy](/.github/SECURITY.md)
+-   [Contribution Guidelines](/.github/CONTRIBUTING.md)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
